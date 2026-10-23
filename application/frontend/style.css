@@ -1,0 +1,795 @@
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    min-height: 100vh;
+    padding: 35px;
+
+    color: #e2e8f0;
+
+    /* Main background */
+    background:
+        radial-gradient(
+            circle at 10% 20%,
+            rgba(99, 102, 241, 0.30),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 90% 10%,
+            rgba(14, 165, 233, 0.25),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 50% 100%,
+            rgba(168, 85, 247, 0.25),
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            #020617,
+            #0f172a,
+            #111827,
+            #020617
+        );
+
+    background-attachment: fixed;
+
+    overflow-x: hidden;
+}
+
+
+/* =========================================================
+   ANIMATED LIGHT EFFECT
+========================================================= */
+
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    width: 350px;
+    height: 350px;
+
+    border-radius: 50%;
+
+    filter: blur(90px);
+
+    pointer-events: none;
+
+    z-index: -1;
+}
+
+body::before {
+    top: -120px;
+    left: -100px;
+
+    background: rgba(59, 130, 246, 0.35);
+
+    animation: floatingLight 8s ease-in-out infinite alternate;
+}
+
+body::after {
+    right: -100px;
+    bottom: -120px;
+
+    background: rgba(168, 85, 247, 0.30);
+
+    animation: floatingLight2 10s ease-in-out infinite alternate;
+}
+
+@keyframes floatingLight {
+
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate(120px, 80px) scale(1.2);
+    }
+
+    100% {
+        transform: translate(40px, 150px) scale(0.9);
+    }
+}
+
+@keyframes floatingLight2 {
+
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate(-100px, -80px) scale(1.25);
+    }
+
+    100% {
+        transform: translate(-30px, -150px) scale(0.9);
+    }
+}
+
+
+/* =========================================================
+   MAIN CONTAINER
+========================================================= */
+
+.container {
+    max-width: 1450px;
+    margin: auto;
+
+    padding: 35px;
+
+    background: rgba(15, 23, 42, 0.78);
+
+    border: 1px solid rgba(255, 255, 255, 0.10);
+
+    border-radius: 22px;
+
+    backdrop-filter: blur(18px);
+
+    box-shadow:
+        0 25px 80px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+    transition: 0.3s ease;
+}
+
+.container:hover {
+    box-shadow:
+        0 30px 90px rgba(0, 0, 0, 0.55),
+        0 0 40px rgba(59, 130, 246, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+h1 {
+    text-align: center;
+
+    font-size: 36px;
+    font-weight: 800;
+
+    margin-bottom: 35px;
+
+    letter-spacing: 0.5px;
+
+    background: linear-gradient(
+        90deg,
+        #60a5fa,
+        #a78bfa,
+        #22d3ee
+    );
+
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    text-shadow:
+        0 0 25px rgba(96, 165, 250, 0.25);
+}
+
+h2 {
+    margin-bottom: 20px;
+
+    color: #f1f5f9;
+
+    font-size: 21px;
+}
+
+
+/* =========================================================
+   SEARCH SECTION
+========================================================= */
+
+.search-section {
+    display: flex;
+
+    gap: 12px;
+
+    margin-bottom: 30px;
+
+    padding: 18px;
+
+    border-radius: 15px;
+
+    background: rgba(30, 41, 59, 0.65);
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.20);
+}
+
+.search-section input {
+    flex: 1;
+
+    padding: 14px 17px;
+
+    border-radius: 10px;
+
+    border: 1px solid #334155;
+
+    background: rgba(15, 23, 42, 0.8);
+
+    color: #f8fafc;
+
+    font-size: 15px;
+
+    outline: none;
+
+    transition: all 0.3s ease;
+}
+
+.search-section input::placeholder {
+    color: #94a3b8;
+}
+
+.search-section input:focus {
+
+    border-color: #60a5fa;
+
+    box-shadow:
+        0 0 0 3px rgba(96, 165, 250, 0.12),
+        0 0 20px rgba(96, 165, 250, 0.12);
+
+    background: rgba(15, 23, 42, 0.95);
+}
+
+
+/* =========================================================
+   GENERAL BUTTON
+========================================================= */
+
+button {
+
+    padding: 12px 20px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    color: white;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        background 0.25s ease;
+}
+
+button:hover {
+
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.30);
+}
+
+button:active {
+
+    transform: translateY(0);
+
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   SEARCH BUTTON
+========================================================= */
+
+.search-section button {
+
+    background: linear-gradient(
+        135deg,
+        #4f46e5,
+        #7c3aed
+    );
+
+    box-shadow:
+        0 5px 15px rgba(99, 102, 241, 0.25);
+}
+
+.search-section button:hover {
+
+    background: linear-gradient(
+        135deg,
+        #6366f1,
+        #8b5cf6
+    );
+
+    box-shadow:
+        0 8px 25px rgba(99, 102, 241, 0.40);
+}
+
+
+/* =========================================================
+   FORM CONTAINER
+========================================================= */
+
+.form-container {
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(30, 41, 59, 0.85),
+            rgba(15, 23, 42, 0.75)
+        );
+
+    padding: 28px;
+
+    border-radius: 16px;
+
+    margin-bottom: 30px;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    box-shadow:
+        0 15px 35px rgba(0, 0, 0, 0.25);
+}
+
+.form-container h2 {
+
+    color: #c4b5fd;
+
+    font-size: 22px;
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+#employeeForm {
+
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 20px;
+}
+
+.form-group {
+
+    display: flex;
+
+    flex-direction: column;
+}
+
+.form-group label {
+
+    margin-bottom: 8px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    color: #cbd5e1;
+}
+
+.form-group input {
+
+    padding: 13px 14px;
+
+    border-radius: 9px;
+
+    border: 1px solid #334155;
+
+    background: rgba(2, 6, 23, 0.65);
+
+    color: white;
+
+    outline: none;
+
+    font-size: 14px;
+
+    transition: all 0.3s ease;
+}
+
+.form-group input:hover {
+
+    border-color: #475569;
+}
+
+.form-group input:focus {
+
+    border-color: #818cf8;
+
+    background: rgba(2, 6, 23, 0.9);
+
+    box-shadow:
+        0 0 0 3px rgba(129, 140, 248, 0.12),
+        0 0 20px rgba(129, 140, 248, 0.08);
+}
+
+
+/* =========================================================
+   ADD / UPDATE BUTTON
+========================================================= */
+
+#saveButton {
+
+    background: linear-gradient(
+        135deg,
+        #059669,
+        #10b981
+    );
+
+    color: white;
+
+    align-self: end;
+
+    box-shadow:
+        0 5px 18px rgba(16, 185, 129, 0.20);
+}
+
+#saveButton:hover {
+
+    background: linear-gradient(
+        135deg,
+        #10b981,
+        #34d399
+    );
+
+    box-shadow:
+        0 8px 25px rgba(16, 185, 129, 0.35);
+}
+
+
+/* =========================================================
+   CANCEL BUTTON
+========================================================= */
+
+#cancelButton {
+
+    background: linear-gradient(
+        135deg,
+        #475569,
+        #64748b
+    );
+
+    color: white;
+
+    align-self: end;
+}
+
+#cancelButton:hover {
+
+    background: linear-gradient(
+        135deg,
+        #64748b,
+        #94a3b8
+    );
+}
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+#message {
+
+    min-height: 25px;
+
+    margin-bottom: 20px;
+
+    padding: 10px 14px;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    transition: all 0.3s ease;
+}
+
+
+/* =========================================================
+   TABLE CONTAINER
+========================================================= */
+
+.table-container {
+
+    overflow-x: auto;
+
+    border-radius: 15px;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    background: rgba(15, 23, 42, 0.65);
+
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.25);
+}
+
+.table-container h2 {
+
+    padding: 22px 22px 5px;
+
+    color: #e2e8f0;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    min-width: 1050px;
+}
+
+
+/* TABLE HEADER */
+
+thead {
+
+    background:
+        linear-gradient(
+            90deg,
+            #312e81,
+            #4338ca,
+            #4f46e5
+        );
+}
+
+th {
+
+    color: white;
+
+    padding: 16px 13px;
+
+    text-align: left;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    letter-spacing: 0.3px;
+}
+
+
+/* TABLE DATA */
+
+td {
+
+    border-bottom: 1px solid rgba(148, 163, 184, 0.10);
+
+    padding: 15px 13px;
+
+    text-align: left;
+
+    font-size: 14px;
+
+    color: #cbd5e1;
+}
+
+tbody tr {
+
+    transition:
+        background 0.25s ease,
+        transform 0.2s ease;
+}
+
+tbody tr:hover {
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(79, 70, 229, 0.12),
+            rgba(59, 130, 246, 0.08)
+        );
+
+    box-shadow:
+        inset 4px 0 0 #6366f1;
+}
+
+tbody tr:last-child td {
+
+    border-bottom: none;
+}
+
+
+/* =========================================================
+   EDIT BUTTON
+========================================================= */
+
+.edit-button {
+
+    background: linear-gradient(
+        135deg,
+        #2563eb,
+        #3b82f6
+    );
+
+    color: white;
+
+    margin-right: 6px;
+
+    padding: 8px 14px;
+
+    box-shadow:
+        0 4px 12px rgba(37, 99, 235, 0.20);
+}
+
+.edit-button:hover {
+
+    background: linear-gradient(
+        135deg,
+        #3b82f6,
+        #60a5fa
+    );
+
+    box-shadow:
+        0 7px 20px rgba(59, 130, 246, 0.35);
+}
+
+
+/* =========================================================
+   DELETE BUTTON
+========================================================= */
+
+.delete-button {
+
+    background: linear-gradient(
+        135deg,
+        #dc2626,
+        #ef4444
+    );
+
+    color: white;
+
+    padding: 8px 14px;
+
+    box-shadow:
+        0 4px 12px rgba(239, 68, 68, 0.18);
+}
+
+.delete-button:hover {
+
+    background: linear-gradient(
+        135deg,
+        #ef4444,
+        #f87171
+    );
+
+    box-shadow:
+        0 7px 20px rgba(239, 68, 68, 0.35);
+}
+
+
+/* =========================================================
+   EMPTY TABLE
+========================================================= */
+
+td[colspan="8"] {
+
+    text-align: center;
+
+    padding: 45px;
+
+    color: #94a3b8;
+
+    font-size: 15px;
+}
+
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+::-webkit-scrollbar {
+
+    width: 9px;
+
+    height: 9px;
+}
+
+::-webkit-scrollbar-track {
+
+    background: #020617;
+}
+
+::-webkit-scrollbar-thumb {
+
+    background: linear-gradient(
+        #4f46e5,
+        #7c3aed
+    );
+
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+
+    background: linear-gradient(
+        #6366f1,
+        #8b5cf6
+    );
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1000px) {
+
+    body {
+        padding: 15px;
+    }
+
+    .container {
+        padding: 22px;
+    }
+
+    #employeeForm {
+
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+@media (max-width: 700px) {
+
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        padding: 16px;
+        border-radius: 15px;
+    }
+
+    h1 {
+        font-size: 27px;
+    }
+
+    .search-section {
+
+        flex-direction: column;
+    }
+
+    .search-section button {
+
+        width: 100%;
+    }
+
+    #employeeForm {
+
+        grid-template-columns: 1fr;
+    }
+
+    .form-container {
+
+        padding: 20px;
+    }
+
+    table {
+
+        min-width: 1050px;
+    }
+}

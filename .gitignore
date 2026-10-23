@@ -1,1 +1,7 @@
 database/postgres-values.yaml
+.idea/
+**/.idea/
+target/
+**/target/
+node_modules/
+.env
