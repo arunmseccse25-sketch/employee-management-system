@@ -1,0 +1,233 @@
+---
+- name: Deploy Employee Management System
+  hosts: local
+  connection: local
+  gather_facts: false
+
+  vars:
+    k8s_namespace: employee-management
+    project_dir: "{{ playbook_dir | dirname }}"
+
+  tasks:
+    - name: "STEP 1 - Check Kubernetes cluster"
+      ansible.builtin.command:
+        argv:
+          - kubectl
+          - get
+          - nodes
+      register: node_status
+      changed_when: false
+
+    - name: "Cluster connectivity verified"
+      ansible.builtin.debug:
+        msg: "Kubernetes cluster is reachable."
+
+    - name: "STEP 2 - Generate namespace manifest"
+      ansible.builtin.command:
+        argv:
+          - kubectl
+          - create
+          - namespace
+          - "{{ k8s_namespace }}"
+          - --dry-run=client
+          - -o
+          - yaml
+      register: namespace_yaml
+      changed_when: false
+
+    - name: "Apply application namespace"
+      ansible.builtin.command:
+        argv:
+          - kubectl
+          - apply
+          - -f
+          - "-"
+        stdin: "{{ namespace_yaml.stdout }}"
+      register: namespace_result
+      changed_when: "'created' in namespace_result.stdout"
+
+    - name: "Namespace status"
+      ansible.builtin.debug:
+        msg: "Namespace {{ k8s_namespace }} is present."
+
+    - name: "STEP 3 - Apply PostgreSQL persistent volume"
+      ansible.builtin.command:
+        argv:
+          - kubectl
+          - apply
+          - -f
+          - "{{ project_dir }}/database/postgres-pv.yaml"
+      register: pv_result
+      changed_when: "'created' in pv_result.stdout or 'configured' in pv_result.stdout"
+
+    - name: "Persistent volume manifest applied"
+      ansible.builtin.debug:
+        msg: "PostgreSQL persistent volume manifest is applied."
+
+    - name: "STEP 4 - Configure Bitnami Helm repository"
+      ansible.builtin.command:
+        argv:
+          - helm
+          - repo
+          - add
+          - bitnami
+          - https://charts.bitnami.com/bitnami
+          - --force-update
+      changed_when: false
+      no_log: true
+
+    - name: "Bitnami Helm repository configured"
+      ansible.builtin.debug:
+        msg: "Bitnami Helm repository is configured."
+
+    - name: "Update Bitnami Helm repository index"
+      ansible.builtin.command:
+        argv:
+          - helm
+          - repo
+          - update
+          - bitnami
+      changed_when: false
+      no_log: true
+
+    - name: "Helm repository index updated"
+      ansible.builtin.debug:
+        msg: "Helm chart repository index is updated."
+
+    - name: "STEP 5 - Deploy PostgreSQL"
+      ansible.builtin.command:
+        argv:
+          - helm
+          - upgrade
+          - --install
+          - employee-postgresql
+          - bitnami/postgresql
+          - --version
+          - "18.12.4"
+          - --namespace
+          - "{{ k8s_namespace }}"
+          - --values
+          - "{{ project_dir }}/database/postgres-values.yaml"
+          - --wait
+          - --timeout
+          - 10m
+      register: postgres_result
+      changed_when: >-
+        'has been upgraded' in postgres_result.stdout or
+        'has been installed' in postgres_result.stdout
+      no_log: true
+
+    - name: "PostgreSQL deployment complete"
+      ansible.builtin.debug:
+        msg: "PostgreSQL Helm release is deployed or up to date."
+
+    - name: "STEP 6 - Deploy backend"
+      ansible.builtin.command:
+        argv:
+          - helm
+          - upgrade
+          - --install
+          - employee-app
+          - "{{ project_dir }}/helm/employee-app"
+          - --namespace
+          - "{{ k8s_namespace }}"
+          - --wait
+          - --timeout
+          - 10m
+      register: backend_result
+      changed_when: >-
+        'has been upgraded' in backend_result.stdout or
+        'has been installed' in backend_result.stdout
+      no_log: true
+
+    - name: "Backend deployment complete"
+      ansible.builtin.debug:
+        msg: "Employee backend Helm release is deployed or up to date."
+
+    - name: "STEP 7 - Deploy frontend and Ingress"
+      ansible.builtin.command:
+        argv:
+          - helm
+          - upgrade
+          - --install
+          - employee-frontend
+          - "{{ project_dir }}/helm/employee-frontend"
+          - --namespace
+          - "{{ k8s_namespace }}"
+          - --wait
+          - --timeout
+          - 10m
+      register: frontend_result
+      changed_when: >-
+        'has been upgraded' in frontend_result.stdout or
+        'has been installed' in frontend_result.stdout
+      no_log: true
+
+    - name: "Frontend and Ingress deployment complete"
+      ansible.builtin.debug:
+        msg: "Employee frontend and Ingress Helm release is deployed or up to date."
+
+    - name: "STEP 8 - Verify application Pods"
+      ansible.builtin.command:
+        argv:
+          - kubectl
+          - get
+          - pods
+          - -n
+          - "{{ k8s_namespace }}"
+      register: pod_status
+      changed_when: false
+
+    - name: "Application Pods checked"
+      ansible.builtin.debug:
+        msg: "Application Pods checked. Run kubectl get pods -n {{ k8s_namespace }} to view details."
+
+    - name: "STEP 9 - Verify persistent storage"
+      ansible.builtin.command:
+        argv:
+          - kubectl
+          - get
+          - pv,pvc
+          - -A
+      register: storage_status
+      changed_when: false
+
+    - name: "Persistent storage checked"
+      ansible.builtin.debug:
+        msg: "Persistent Volumes and Claims checked. Run kubectl get pv,pvc -A to view details."
+
+    - name: "STEP 10 - Verify Helm releases"
+      ansible.builtin.command:
+        argv:
+          - helm
+          - list
+          - -n
+          - "{{ k8s_namespace }}"
+      register: helm_status
+      changed_when: false
+
+    - name: "Helm releases checked"
+      ansible.builtin.debug:
+        msg: "Helm releases checked. Run helm list -n {{ k8s_namespace }} to view details."
+
+    - name: "STEP 11 - Verify Ingress"
+      ansible.builtin.command:
+        argv:
+          - kubectl
+          - get
+          - ingress
+          - -n
+          - "{{ k8s_namespace }}"
+      register: ingress_status
+      changed_when: false
+
+    - name: "Ingress checked"
+      ansible.builtin.debug:
+        msg: "Ingress checked. Application URL: http://employee.example.com"
+
+    - name: "Deployment automation summary"
+      ansible.builtin.debug:
+        msg:
+          - "Deployment playbook completed successfully."
+          - "Review task status above; failed tasks will stop the playbook."
+          - "Application URL: http://employee.example.com"

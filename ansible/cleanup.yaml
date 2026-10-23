@@ -1,0 +1,44 @@
+
+---
+- name: Uninstall Employee Management System safely
+  hosts: local
+  connection: local
+  gather_facts: false
+
+  vars:
+    namespace: employee-management
+
+  tasks:
+    - name: Get installed Helm releases
+      command: helm list -q -n {{ namespace }}
+      register: helm_releases
+      changed_when: false
+
+    - name: Uninstall frontend
+      command: helm uninstall employee-frontend -n {{ namespace }}
+      when: "'employee-frontend' in helm_releases.stdout_lines"
+
+    - name: Uninstall backend
+      command: helm uninstall employee-app -n {{ namespace }}
+      when: "'employee-app' in helm_releases.stdout_lines"
+
+    - name: Uninstall PostgreSQL
+      command: helm uninstall employee-postgresql -n {{ namespace }}
+      when: "'employee-postgresql' in helm_releases.stdout_lines"
+
+    - name: Verify PostgreSQL PVC still exists
+      command: kubectl get pvc data-employee-postgresql-0 -n {{ namespace }}
+      register: postgres_pvc
+      changed_when: false
+
+    - name: Verify PersistentVolume still exists
+      command: kubectl get pv postgres-pv
+      register: postgres_pv
+      changed_when: false
+
+    - name: Display storage preservation status
+      debug:
+        msg:
+          - "PostgreSQL PVC is present."
+          - "PersistentVolume is present."
+          - "Namespace and storage were not deleted."

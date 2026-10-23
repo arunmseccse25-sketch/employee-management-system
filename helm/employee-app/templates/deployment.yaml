@@ -1,0 +1,42 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "employee-app.fullname" . }}
+  labels:
+    {{- include "employee-app.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "employee-app.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "employee-app.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "employee-app.serviceAccountName" . }}
+      containers:
+        - name: backend
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: DB_URL
+              value: "jdbc:postgresql://employee-postgresql.employee-management.svc.cluster.local:5432/employeedb"
+            - name: DB_USERNAME
+              value: "employeeuser"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: employee-postgresql
+                  key: password
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

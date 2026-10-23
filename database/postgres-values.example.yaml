@@ -1,0 +1,11 @@
+auth:
+  postgresPassword: "CHANGE_ME"
+  username: "employeeuser"
+  password: "CHANGE_ME"
+  database: "employeedb"
+
+primary:
+  persistence:
+    enabled: true
+    storageClass: manual
+    size: 5Gi
