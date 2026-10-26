@@ -1,3 +1,4 @@
+
 auth:
   postgresPassword: "CHANGE_ME"
   username: "employeeuser"
